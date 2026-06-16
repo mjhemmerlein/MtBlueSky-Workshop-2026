@@ -1,1 +1,1 @@
-# MtBlueSky-Workshop-2026
+# 2026 Mt Blue Sky Workshop
