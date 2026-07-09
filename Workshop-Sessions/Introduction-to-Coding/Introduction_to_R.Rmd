@@ -1,0 +1,96 @@
+---
+title: "Introduction_to_R"
+author: "Meg Hemmerlein"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Helpful Keys
+# Play button = run whole chunk
+# Cmd + Enter = run one line of code
+
+
+```{r Variables -- Hello world}
+"Hello world"
+
+message = "Hello world"
+
+print(message)
+
+message
+
+ls()
+```
+
+
+```{r Variables -- Data Types}
+
+first_name = c("Harry", "Ron", "Hermione")
+last_name = c("Potter", "Weasley", "Granger")
+n_kids = c(1,7,1)
+survived = c(TRUE, TRUE, TRUE)
+pet = factor(c("Owl", "Rat", "Cat"))
+
+class(first_name)
+class(last_name)
+class(n_kids)
+class(survived)
+class(pet)
+
+harrypotter <- data.frame(
+  first_name,
+  last_name,
+  n_kids,
+  survived,
+  pet)
+
+str(harrypotter)
+```
+
+
+```{r Installing packages}
+
+#install.packages("tidyverse")
+#install.packages("readxl")
+
+library(tidyverse)
+library(readxl)
+```
+
+
+
+```{r Reading in data -- Are you in the right directory?}
+
+getwd()
+
+harrypotter_characters = read_xlsx("Workshop-Sessions/Introduction-to-Coding/harry_potter_characters.xlsx")
+
+```
+
+```{r}
+# Structure of data
+str(harrypotter_characters)
+
+# Number of survivors
+sum(harrypotter_characters$survived)
+
+# Number who died
+sum(!harrypotter_characters$survived)
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
