@@ -83,11 +83,6 @@ sum(!harrypotter_characters$survived)
 ```
 
 
-```{r}
-
-```
-
-
 
 
 
