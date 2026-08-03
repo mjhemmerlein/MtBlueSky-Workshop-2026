@@ -10,9 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Helpful Keys
-# Play button = run whole chunk
-# Cmd + Enter = run one line of code
 
+# Play button = run whole chunk
+
+# Cmd + Enter = run one line of code
 
 ```{r Variables -- Hello world}
 "Hello world"
@@ -26,66 +27,86 @@ message
 ls()
 ```
 
-
 ```{r Variables -- Data Types}
 
-first_name = c("Harry", "Ron", "Hermione")
-last_name = c("Potter", "Weasley", "Granger")
-n_kids = c(1,7,1)
-survived = c(TRUE, TRUE, TRUE)
-pet = factor(c("Owl", "Rat", "Cat"))
+species = c("Adelie", "Gentoo", "Chinstrap")
+island = as.factor(c("Torgersen", "Biscoe", "Dream"))
+body_mass_g = as.numeric(c(4987, 5850, 3575))
 
-class(first_name)
-class(last_name)
-class(n_kids)
-class(survived)
-class(pet)
+class(species)
+class(island)
+class(body_mass_g)
 
-harrypotter <- data.frame(
-  first_name,
-  last_name,
-  n_kids,
-  survived,
-  pet)
+penguins <- data.frame(
+  species,
+  island,
+  body_mass_g)
 
-str(harrypotter)
+str(penguins)
 ```
-
 
 ```{r Installing packages}
 
 #install.packages("tidyverse")
-#install.packages("readxl")
+#install.packages("readr")
 
 library(tidyverse)
-library(readxl)
+library(readr)
 ```
 
-
-
-```{r Reading in data -- Are you in the right directory?}
+```{r Reading in a file}
 
 getwd()
 
-harrypotter_characters = read_xlsx("Workshop-Sessions/Introduction-to-Coding/harry_potter_characters.xlsx")
+penguins = read_csv("/Users/MegHemmerlein/Library/CloudStorage/OneDrive-Colostate/MtBlueSky-Workshop/Workshop-Sessions/Introduction-to-Coding/penguins.csv")
 
 ```
 
-```{r}
-# Structure of data
-str(harrypotter_characters)
+```{r Explore file}
 
-# Number of survivors
-sum(harrypotter_characters$survived)
+str(penguins)
 
-# Number who died
-sum(!harrypotter_characters$survived)
+ncol(penguins)
+nrow(penguins)
+
+colnames(penguins)
+```
+
+```{r Plotting}
+
+#install.packages("ggplot2")
+
+library(ggplot2)
+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+             size = 2)
+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+             size = 2) +
+    scale_color_manual(values = c("darkorange","darkorchid","cyan4"))
+
+
+ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species, 
+                 shape = species),
+             size = 2) + 
+  geom_smooth(method = "lm", se = FALSE, aes(color = species)) +
+  scale_color_manual(values = c("darkorange","darkorchid","cyan4"))
+
 ```
 
 
+```{r Extra problems}
 
+#1) Simpson's paradox is a statistical phenomenon where a trend between two variables appears in seperate groups of data, but disappears or reverses when groups are combined. Can you omit the grouping by species and plot bill length by bill depth to show this phenomenon? 
 
+#2) Are there differnces in the distribution of flipper length across the three species? Hint: look into a function called 'geom_histogram'.
 
+#3) Can you represent this same data as a box blot instead? Hint: X axis will be species and y axis will be flipper length. Hint 2: look into function called 'geom_boxplot'.
 
-
+```
 
