@@ -102,11 +102,11 @@ ggplot(data = penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
 
 ```{r Extra problems}
 
-#1) Simpson's paradox is a statistical phenomenon where a trend between two variables appears in seperate groups of data, but disappears or reverses when groups are combined. Can you omit the grouping by species and plot bill length by bill depth to show this phenomenon? 
+#1) Simpson's paradox is a statistical phenomenon where a trend between two variables appears in separate groups of data, but disappears or reverses when groups are combined. Can you omit the grouping by species and plot bill length by bill depth to show this phenomenon? 
 
-#2) Are there differnces in the distribution of flipper length across the three species? Hint: look into a function called 'geom_histogram'.
+#2) Are there differences in the distribution of flipper length across the three species? Hint: look into a function called 'geom_histogram'.
 
-#3) Can you represent this same data as a box blot instead? Hint: X axis will be species and y axis will be flipper length. Hint 2: look into function called 'geom_boxplot'.
+#3) Can you represent this same data as a box blot instead? Hint: X axis will be species and y axis will be flipper length. Hint 2: look into function called 'geom_boxplot'. What are the points outside the boxplots?
 
 ```
 
