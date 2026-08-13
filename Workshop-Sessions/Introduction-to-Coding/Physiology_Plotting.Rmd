@@ -21,7 +21,7 @@ library(readxl)
 ```{r Reading in a file}
 getwd()
 
-phys = read_xlsx("/Users/MegHemmerlein/OneDrive - Colostate/MtBlueSky-Workshop/Workshop-Sessions/Introduction-to-Coding/altitude_workshop_data_4participants.xlsx")
+phys = read_xlsx("/Users/MegHemmerlein/OneDrive - Colostate/MtBlueSky-Workshop/Workshop-Sessions/Introduction-to-Coding/Mt Blue Sky Workshop - Physiology Data.xlsx")
 
 str(phys)
 
@@ -33,6 +33,71 @@ phys$Participant = as.factor(phys$Participant)
 phys$Time_Elevation = paste0(phys$Date, "_", phys$Location)
 phys$Time_Elevation = as.factor(phys$Time_Elevation)
 
+phys = na.omit(phys)
+
+
+
+## VARAIBLE FIX
+phys %>%
+  count(Variable)
+
+phys <- phys %>%
+  mutate(
+    Variable = case_when(
+      Variable %in% c("Bord_RPE", "Borg_RPE") ~ "Borg_RPE",
+      Variable %in% c("Breathing_rate", "breathing_rate") ~ "Breathing_Rate",
+      Variable %in% c("Heart_rate", "heart_rate") ~ "Heart_Rate",
+      Variable %in% c(
+        "Lake_Louis_Score",
+        "Lake_Louise_Score",
+        "Lake_Lousie_Score",
+        "lake_Louis_Score",
+        "lake_Louise_Score"
+      ) ~ "Lake_Louise_Score",
+      Variable %in% c("SpO2", "spO2") ~ "SpO2",
+      Variable %in% c(
+        "Time_to complete",
+        "Time_to_Complete",
+        "Time_to_complete",
+        "time_to_complete"
+      ) ~ "Time_to_Complete",
+      TRUE ~ Variable
+    )
+  )
+
+
+phys %>%
+  count(Variable)
+
+
+## STATE FIX
+phys %>%
+  count(State)
+
+phys <- phys %>%
+  mutate(
+    State = case_when(
+      State %in% c("Excerise", "Exercise", "exercise") ~ "Exercise",
+      State %in% c("Rested", "rested") ~ "Rested",
+      TRUE ~ State))
+
+phys %>%
+  count(State)
+
+
+## PARTICIPANT FIX
+phys %>%
+  count(Participant)
+
+phys <- phys %>%
+  mutate(
+    Participant = case_when(
+      Participant %in% c("Jerimiah", "JJ") ~ "JJ",
+      TRUE ~ Participant))
+
+phys %>%
+  count(Participant)
+
 ```
 
 
@@ -43,76 +108,7 @@ colnames(phys)
 ```
 
 
-```{r Indivial physiology in the field}
-phys %>%
-  filter(Variable == "Heart_Rate") %>%
-  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
-  geom_point(size = 2) +
-  geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
-  facet_wrap(~ State) +
-  labs(color = "Participant", shape = "State", linetype = "State") +
-  ggtitle("Heart Rate (beats/min)") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1))
-
-phys %>%
-  filter(Variable == "Breathing_Rate") %>%
-  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
-  geom_point(size = 2) +
-  geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
-  facet_wrap(~ State) +
-  labs(color = "Participant", shape = "State", linetype = "State") +
-  ggtitle("Breathing Rate (breaths/min)") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1))
-
-phys %>%
-  filter(Variable == "SpO2") %>%
-  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
-  geom_point(size = 2) +
-  geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
-  facet_wrap(~ State) +
-  labs(color = "Participant", shape = "State", linetype = "State") +
-  ggtitle("Oxygen Saturation") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1))
-
-phys %>%
-  filter(Variable == "Borg_RPE") %>%
-  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
-  geom_point(size = 2) +
-  geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
-  facet_wrap(~ State) +
-  labs(color = "Participant", shape = "State", linetype = "State") +
-  ggtitle("Borg RPE (6-20 scale)") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1))
-
-phys %>%
-  filter(Variable == "Lake_Louise_Score") %>%
-  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
-  geom_point(size = 2) +
-  geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
-  facet_wrap(~ State) +
-  labs(color = "Participant", shape = "State", linetype = "State") +
-  ggtitle("Lake Louise Score (0-12 scale)") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-
-
-```{r Group physiology in the field}
+```{r Summary stats}
 vars <- c("Heart_Rate", "Breathing_Rate", "SpO2", "Borg_RPE", "Lake_Louise_Score")
 
 summary_stats <- phys %>%
@@ -123,6 +119,22 @@ summary_stats <- phys %>%
     sd = sd(Value, na.rm = TRUE),
     n = n(),
     .groups = "drop")
+```
+
+
+```{r Heart Rate}
+phys %>%
+  filter(Variable == "Heart_Rate") %>%
+  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
+  geom_point(size = 2) +
+  geom_line() +
+  facet_wrap(~ State) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Heart Rate (beats/min)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 summary_stats %>%
   filter(Variable == "Heart_Rate") %>%
@@ -143,6 +155,23 @@ ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1))
 
+```
+
+
+```{r Breathing Rate}
+phys %>%
+  filter(Variable == "Breathing_Rate") %>%
+  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
+  geom_point(size = 2) +
+  geom_line() +
+  facet_wrap(~ State) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Breathing Rate (breaths/min)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 summary_stats %>%
   filter(Variable == "Breathing_Rate") %>%
 ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
@@ -158,6 +187,22 @@ ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
     y = "Breathing Rate (breaths/min)",
     title = "Mean Breathing Rate ± SD"
   ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+```{r SpO2}
+phys %>%
+  filter(Variable == "SpO2") %>%
+  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
+  geom_point(size = 2) +
+  geom_line() +
+  facet_wrap(~ State) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Oxygen Saturation") +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1))
@@ -181,6 +226,24 @@ ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1))
 
+```
+
+
+```{r Borg RPE}
+phys %>%
+  filter(Variable == "Borg_RPE") %>%
+  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
+  facet_wrap(~ State) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Borg RPE (6-20 scale)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+
 summary_stats %>%
   filter(Variable == "Borg_RPE") %>%
 ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
@@ -196,6 +259,21 @@ ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
     y = "Borg RPE",
     title = "Mean Borg RPE ± SD"
   ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r Lake Louise Score}
+phys %>%
+  filter(Variable == "Lake_Louise_Score") %>%
+  ggplot(aes(x = Time_Elevation, y = Value, color = Participant, group = Participant)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
+  facet_wrap(~ State) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Lake Louise Score (0-12 scale)") +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1))
@@ -218,18 +296,88 @@ ggplot(aes(x = Time_Elevation, y = mean, group = 1)) +
   theme_bw() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
 
 
 ```{r Group acclimatization}
 
+Group1 <- c("Matt", "Sam")
+Group2 <- c("Lilly", "Maddie", "Rhiannon")
+Group3 <- c("JJ", "Sarah M", "Sara Z")
+Group4 <- c("Beth", "Taylor", "Simone")
+Group5 <- c("Kate", "Meg", "Ashley")
+
+
 phys %>%
+  filter(Participant %in% Group1) %>%
   filter(Variable == "Heart_Rate") %>%
   ggplot(aes(x = Date, y = Value, color = Participant, 
              shape = State, linetype = State)) +
   geom_point(size = 2) +
   geom_line() +
-  scale_linetype_manual(values = c("Rested" = "solid", "Excerise" = "dashed")) +
+  scale_linetype_manual(values = c("Rested" = "solid", "Exercise" = "dashed")) +
+  facet_grid(Participant ~ Elevation) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Heart Rate (bpm)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+phys %>%
+  filter(Participant %in% Group2) %>%
+  filter(Variable == "Heart_Rate") %>%
+  ggplot(aes(x = Date, y = Value, color = Participant, 
+             shape = State, linetype = State)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Exercise" = "dashed")) +
+  facet_grid(Participant ~ Elevation) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Heart Rate (bpm)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+phys %>%
+  filter(Participant %in% Group3) %>%
+  filter(Variable == "Heart_Rate") %>%
+  ggplot(aes(x = Date, y = Value, color = Participant, 
+             shape = State, linetype = State)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Exercise" = "dashed")) +
+  facet_grid(Participant ~ Elevation) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Heart Rate (bpm)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+phys %>%
+  filter(Participant %in% Group4) %>%
+  filter(Variable == "Heart_Rate") %>%
+  ggplot(aes(x = Date, y = Value, color = Participant, 
+             shape = State, linetype = State)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Exercise" = "dashed")) +
+  facet_grid(Participant ~ Elevation) +
+  labs(color = "Participant", shape = "State", linetype = "State") +
+  ggtitle("Heart Rate (bpm)") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1))
+
+phys %>%
+  filter(Participant %in% Group5) %>%
+  filter(Variable == "Heart_Rate") %>%
+  ggplot(aes(x = Date, y = Value, color = Participant, 
+             shape = State, linetype = State)) +
+  geom_point(size = 2) +
+  geom_line() +
+  scale_linetype_manual(values = c("Rested" = "solid", "Exercise" = "dashed")) +
   facet_grid(Participant ~ Elevation) +
   labs(color = "Participant", shape = "State", linetype = "State") +
   ggtitle("Heart Rate (bpm)") +
@@ -245,7 +393,7 @@ phys %>%
 
 #2) How would I view only my data for the 'Group acclimatization' chunk? Hint: look up filter function.
 
-#3) If I wanted the median of each of our physiological measurements (instead of mean), which lines of code would I change? How would I implement this?
+#3) If I wanted the median of each of our group averaged physiological measurements (instead of mean), which lines of code would I change? How would I implement this?
 
 ```
 
